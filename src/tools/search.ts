@@ -18,7 +18,6 @@ const SEARCH_TOOLS = {
 };
 
 function configureSearchTools(server: McpServer, tokenProvider: () => Promise<AccessToken>, connectionProvider: () => Promise<WebApi>, userAgentProvider: () => string) {
-
   server.tool(
     SEARCH_TOOLS.search_code,
     "Search Azure DevOps Repositories for a given search text",
@@ -140,7 +139,7 @@ function configureSearchTools(server: McpServer, tokenProvider: () => Promise<Ac
       state: z.array(z.string()).optional().describe("Filter by work item states"),
       assignedTo: z.array(z.string()).optional().describe("Filter by assigned to users"),
       $skip: z.number().default(0).describe("Number of results to skip for pagination"),
-      $top: z.number().default(10).describe("Number of results to return")
+      $top: z.number().default(10).describe("Number of results to return"),
     },
     async ({ searchText, project, areaPath, workItemType, state, assignedTo, $skip, $top }) => {
       const accessToken = await tokenProvider();
