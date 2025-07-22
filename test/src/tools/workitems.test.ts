@@ -632,12 +632,12 @@ describe("configureWorkItemTools", () => {
         id: 131489,
         updates: [
           {
-            op: "Add", // Uppercase to test transformation to lowercase (line 456)
+            op: "Add",
             path: "/fields/System.Title",
             value: "Updated Sample Task",
           },
           {
-            op: "Replace", // Another uppercase variant to ensure transformation
+            op: "Replace",
             path: "/fields/System.Description",
             value: "Updated Description",
           },
