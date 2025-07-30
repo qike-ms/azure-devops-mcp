@@ -58,7 +58,7 @@ function getLinkTypeFromName(name: string) {
   }
 }
 
-function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<AccessToken>, connectionProvider: () => Promise<WebApi>, userAgentProvider: () => string) {
+function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<string>, connectionProvider: () => Promise<WebApi>, userAgentProvider: () => string) {
   server.tool(
     WORKITEM_TOOLS.list_backlogs,
     "Revieve a list of backlogs for a given project and team.",
@@ -205,7 +205,7 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
       const response = await fetch(`${orgUrl}/${project}/_apis/wit/workItems/${workItemId}/comments?format=${formatParameter}&api-version=${markdownCommentsApiVersion}`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${accessToken.token}`,
+          "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "User-Agent": userAgentProvider(),
         },
@@ -329,7 +329,7 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
         const response = await fetch(`${orgUrl}/_apis/wit/$batch?api-version=${batchApiVersion}`, {
           method: "PATCH",
           headers: {
-            "Authorization": `Bearer ${accessToken.token}`,
+            "Authorization": `Bearer ${accessToken}`,
             "Content-Type": "application/json",
             "User-Agent": userAgentProvider(),
           },
@@ -668,7 +668,7 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
       const response = await fetch(`${orgUrl}/_apis/wit/$batch?api-version=${batchApiVersion}`, {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${accessToken.token}`,
+          "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "User-Agent": userAgentProvider(),
         },
@@ -740,7 +740,7 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
       const response = await fetch(`${orgUrl}/_apis/wit/$batch?api-version=${batchApiVersion}`, {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${accessToken.token}`,
+          "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "User-Agent": userAgentProvider(),
         },
