@@ -204,19 +204,19 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
 
       // Detect content type based on file extension
       const getContentType = (fileName: string): string => {
-        const ext = fileName.toLowerCase().split('.').pop();
+        const ext = fileName.toLowerCase().split(".").pop();
         const mimeTypes: Record<string, string> = {
-          'gif': 'image/gif',
-          'jpg': 'image/jpeg',
-          'jpeg': 'image/jpeg',
-          'png': 'image/png',
-          'pdf': 'application/pdf',
-          'txt': 'text/plain',
-          'doc': 'application/msword',
-          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          gif: "image/gif",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+          pdf: "application/pdf",
+          txt: "text/plain",
+          doc: "application/msword",
+          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         };
-        return mimeTypes[ext || ''] || 'application/octet-stream';
+        return mimeTypes[ext || ""] || "application/octet-stream";
       };
 
       // Return the attachment as binary content with metadata
@@ -227,15 +227,15 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
             resource: {
               uri: `data:${getContentType(name)};base64,${attachmentBuffer.toString("base64")}`,
               mimeType: getContentType(name),
-              text: attachmentBuffer.toString("base64")
-            }
-          }
+              text: attachmentBuffer.toString("base64"),
+            },
+          },
         ],
         meta: {
           attachmentName: name,
           attachmentSize: attachmentBuffer.length,
-          contentType: getContentType(name)
-        }
+          contentType: getContentType(name),
+        },
       };
     }
   );
