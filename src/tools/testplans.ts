@@ -236,10 +236,10 @@ function convertStepsToXml(steps: string): string {
     const stepLine = stepsLines[i].trim();
     if (stepLine) {
       // Split step and expected result by '|', fallback to default if not provided
-      const [stepPart, expectedPart] = stepLine.split('|').map(s => s.trim());
+      const [stepPart, expectedPart] = stepLine.split("|").map((s) => s.trim());
       const stepMatch = stepPart.match(/^(\d+)\.\s*(.+)$/);
       const stepText = stepMatch ? stepMatch[2] : stepPart;
-      const expectedText = expectedPart || 'Verify step completes successfully';
+      const expectedText = expectedPart || "Verify step completes successfully";
 
       xmlSteps += `
                 <step id="${i + 1}" type="ActionStep">
