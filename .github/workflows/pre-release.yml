@@ -1,0 +1,51 @@
+name: Nightly Pre-release
+
+on:
+  schedule:
+    - cron: "0 22 * * *" # Runs every day at 22:00 UTC (midnight CEST during daylight saving time)
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  pre-release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Create .npmrc with auth token
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+          echo "@azure-devops:registry=https://registry.npmjs.org/" >> .npmrc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update package version for nightly release
+        run: |
+          # Read version.ts to get both base version and preReleasePackageVersion
+          $versionTs = Get-Content "src/version.ts"
+          $baseVersionLine = $versionTs | Where-Object { $_ -match 'export const packageVersion = "(.+)"' }
+          $baseVersion = $Matches[1]
+          $preReleaseVersionLine = $versionTs | Where-Object { $_ -match 'export const preReleasePackageVersion = "(.+)"' }
+          $preReleaseVersion = $Matches[1]
+          
+          $packageJson = Get-Content "package.json" | ConvertFrom-Json
+          $nightlyVersion = "$baseVersion-nightly.$preReleaseVersion"
+          $packageJson.version = $nightlyVersion
+          $packageJson | ConvertTo-Json -Depth 100 | Set-Content "package.json"
+          Write-Host "Updated version to: $nightlyVersion"
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --access public --tag nightly --tag pre-release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
