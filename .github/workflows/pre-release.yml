@@ -2,16 +2,16 @@ name: Nightly Pre-release
 
 permissions:
   contents: read
-  id-token: write # Required for trusted publishing
+  id-token: write # Required for OIDC
 
 on:
   schedule:
     - cron: "0 22 * * *" # Runs every day at 22:00 UTC (midnight CEST during daylight saving time)
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   pre-release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -21,30 +21,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org/"
+          registry-url: "https://registry.npmjs.org"
+
+      # npm 11.5.1 or later is required for OIDC integration
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Update package version for nightly release
-        run: |
-          # Read version.ts to get both base version and preReleasePackageVersion
-          $versionTs = Get-Content "src/version.ts"
-          $baseVersionLine = $versionTs | Where-Object { $_ -match 'export const packageVersion = "(.+)"' }
-          $baseVersion = $Matches[1]
-          $preReleaseVersionLine = $versionTs | Where-Object { $_ -match 'export const preReleasePackageVersion = "(.+)"' }
-          $preReleaseVersion = $Matches[1]
-
-          $packageJson = Get-Content "package.json" | ConvertFrom-Json
-          $nightlyVersion = "$baseVersion-nightly.$preReleaseVersion"
-          $packageJson.version = $nightlyVersion
-          $packageJson | ConvertTo-Json -Depth 100 | Set-Content "package.json"
-          Write-Host "Updated version to: $nightlyVersion"
-
       - name: Build the project
-        run: npm run build
+        run: npm run build --if-present
 
-      - name: Publish to npm
-        run: npm publish --access public --tag nightly --tag pre-release --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to npm with nightly version
+        run: |
+          DATE_STRING=$(date +%Y%m%d)
+          CURRENT_VERSION=$(npm pkg get version | tr -d '"')
+          npm version "$CURRENT_VERSION-nightly.$DATE_STRING" --no-git-tag-version
+          npm publish --access public --tag nightly --tag pre-release --provenance
