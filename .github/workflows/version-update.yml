@@ -28,7 +28,7 @@ jobs:
         id: version_type
         run: |
           if ($env:GITHUB_EVENT_PULL_REQUEST_LABELS -contains "major") {
-            $env:VERSION_TYPE = "mamjor"
+            $env:VERSION_TYPE = "major"
           } elseif ($env:GITHUB_EVENT_PULL_REQUEST_LABELS -contains "minor") {
             $env:VERSION_TYPE = "minor"
           } elseif ($env:GITHUB_EVENT_PULL_REQUEST_LABELS -contains "patch") {
