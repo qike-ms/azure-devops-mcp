@@ -2,7 +2,7 @@ name: Nightly Pre-release
 
 permissions:
   contents: read
-  id-token: write  # Required for trusted publishing
+  id-token: write # Required for trusted publishing
 
 on:
   schedule:
@@ -12,7 +12,7 @@ on:
 jobs:
   pre-release:
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,8 +20,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org/"
 
       - name: Install dependencies
         run: npm ci
@@ -34,7 +34,7 @@ jobs:
           $baseVersion = $Matches[1]
           $preReleaseVersionLine = $versionTs | Where-Object { $_ -match 'export const preReleasePackageVersion = "(.+)"' }
           $preReleaseVersion = $Matches[1]
-          
+
           $packageJson = Get-Content "package.json" | ConvertFrom-Json
           $nightlyVersion = "$baseVersion-nightly.$preReleaseVersion"
           $packageJson.version = $nightlyVersion

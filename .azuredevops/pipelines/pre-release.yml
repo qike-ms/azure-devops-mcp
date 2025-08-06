@@ -8,7 +8,7 @@ schedules:
         - main
 
 variables:
-  - group: npm-credentials  # Variable group containing NPM_TOKEN
+  - group: npm-credentials # Variable group containing NPM_TOKEN
   - name: nightlyVersion
     value: $[counter(format('{0:yyyy}{0:MM}{0:dd}', pipeline.startTime), 1)]
 
@@ -27,13 +27,13 @@ jobs:
       - task: npmAuthenticate@0
         inputs:
           workingFile: .npmrc
-          customEndpoint: 'npmjs-service-connection'
+          customEndpoint: "npmjs-service-connection"
         displayName: Authenticate with npm registry
 
       - task: PowerShell@2
         displayName: Create .npmrc with auth token
         inputs:
-          targetType: 'inline'
+          targetType: "inline"
           script: |
             "//registry.npmjs.org/:_authToken=$(NPM_TOKEN)" | Out-File -FilePath ".npmrc" -Encoding utf8
             "@azure-devops:registry=https://registry.npmjs.org/" | Add-Content -Path ".npmrc"
@@ -46,7 +46,7 @@ jobs:
       - task: PowerShell@2
         displayName: Update package version for nightly release
         inputs:
-          targetType: 'inline'
+          targetType: "inline"
           script: |
             # Read version.ts to get both base version and preReleasePackageVersion
             $versionTs = Get-Content "src/version.ts"
@@ -54,7 +54,7 @@ jobs:
             $baseVersion = $Matches[1]
             $preReleaseVersionLine = $versionTs | Where-Object { $_ -match 'export const preReleasePackageVersion = "(.+)"' }
             $preReleaseVersion = $Matches[1]
-            
+
             $packageJson = Get-Content "package.json" | ConvertFrom-Json
             $nightlyVersion = "$baseVersion-nightly.$preReleaseVersion"
             $packageJson.version = $nightlyVersion

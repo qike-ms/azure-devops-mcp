@@ -1,7 +1,7 @@
 name: Update Package Version
 
 permissions:
-  contents: write  # Changed from 'read' to 'write' to allow pushing commits
+  contents: write # Changed from 'read' to 'write' to allow pushing commits
   pull-requests: write
   packages: write
 
@@ -41,7 +41,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Added token for push permissions
+          token: ${{ secrets.GITHUB_TOKEN }} # Added token for push permissions
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -61,21 +61,21 @@ jobs:
           $packageJson = Get-Content "package.json" | ConvertFrom-Json
           $currentVersion = $packageJson.version
           Write-Host "Current version: $currentVersion"
-          
+
           # Update package.json version and create git tag
           $newVersion = npm version $env:VERSION_TYPE
           $newVersionString = $newVersion.TrimStart('v')
           Write-Host "New version: $newVersionString"
-          
+
           # Update version.ts file
           $versionTs = Get-Content "src/version.ts"
           $updatedVersionTs = $versionTs -replace 'export const packageVersion = ".*"', "export const packageVersion = `"$newVersionString`""
           $updatedVersionTs | Set-Content "src/version.ts"
           Write-Host "Updated version.ts"
-          
+
           # Show git status for debugging
           git status
-          
+
           # Add version.ts to the commit
           git add src/version.ts
           git commit --amend --no-edit
