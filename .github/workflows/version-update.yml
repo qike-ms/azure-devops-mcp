@@ -37,25 +37,44 @@ jobs:
         shell: pwsh
 
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+        shell: pwsh
 
       - name: Update package version and push tag
         if: env.VERSION_TYPE != ''
         run: |
-          $newVersion = npm version $env:VERSION_TYPE
-          git tag "v$newVersion"
-          git push origin "v$newVersion"
+          # Get current version from package.json
+          $packageJson = Get-Content "package.json" | ConvertFrom-Json
+          $currentVersion = $packageJson.version
+          
+          # Update package.json version
+          $newVersion = npm version $env:VERSION_TYPE --no-git-tag-version
+          $newVersionString = $newVersion.TrimStart('v')
+          
+          # Update version.ts file
+          $versionTs = Get-Content "src/version.ts"
+          $updatedVersionTs = $versionTs -replace 'export const packageVersion = ".*"', "export const packageVersion = `"$newVersionString`""
+          $updatedVersionTs | Set-Content "src/version.ts"
+          
+          # Commit changes and create tag
+          git add package.json src/version.ts
+          git commit -m "Update version to $newVersionString"
+          git tag "v$newVersionString"
+          git push origin "v$newVersionString"
         shell: pwsh
 
       - name: Push changes
         if: env.VERSION_TYPE != ''
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git push origin HEAD:main
         shell: pwsh
