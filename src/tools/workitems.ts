@@ -4,7 +4,7 @@
 import { AccessToken } from "@azure/identity";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebApi } from "azure-devops-node-api";
-import { WorkItemExpand, WorkItemRelation } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces.js";
+import { WorkItemExpand, WorkItemRelation, Wiql } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces.js";
 import { QueryExpand } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces.js";
 import { z } from "zod";
 import { batchApiVersion, markdownCommentsApiVersion, getEnumKeys, safeEnumConvert } from "../utils.js";
@@ -25,6 +25,7 @@ const WORKITEM_TOOLS = {
   get_work_item_type: "wit_get_work_item_type",
   get_query: "wit_get_query",
   get_query_results_by_id: "wit_get_query_results_by_id",
+  query_by_wiql: "wit_query_by_wiql",
   update_work_items_batch: "wit_update_work_items_batch",
   work_items_link: "wit_work_items_link",
   work_item_unlink: "wit_work_item_unlink",
@@ -626,6 +627,26 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
       const workItemApi = await connection.getWorkItemTrackingApi();
       const teamContext = { project, team };
       const queryResult = await workItemApi.queryById(id, teamContext, timePrecision, top);
+
+      return {
+        content: [{ type: "text", text: JSON.stringify(queryResult, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    WORKITEM_TOOLS.query_by_wiql,
+    "Execute a WIQL query to retrieve work items.",
+    {
+      wiql: z.string().describe("The WIQL query string to execute."),
+      top: z.number().optional().describe("The maximum number of results to return."),
+    },
+    async ({ wiql, top }) => {
+      const connection = await connectionProvider();
+      const workItemApi = await connection.getWorkItemTrackingApi();
+
+      const wiqlObject: Wiql = { query: wiql };
+      const queryResult = await workItemApi.queryByWiql(wiqlObject, undefined, undefined, top);
 
       return {
         content: [{ type: "text", text: JSON.stringify(queryResult, null, 2) }],
