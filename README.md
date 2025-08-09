@@ -71,6 +71,7 @@ Interact with these Azure DevOps services:
 - **wit_get_work_item_type**: Get a specific work item type.
 - **wit_get_query**: Get a query by its ID or path.
 - **wit_get_query_results_by_id**: Retrieve the results of a work item query given the query ID.
+- **wit_query_by_wiql**: Execute a WIQL query to retrieve work items.
 - **wit_update_work_items_batch**: Update work items in batch.
 - **wit_work_items_link**: Link work items together in batch.
 - **wit_work_item_unlink**: Unlink one or many links from a work item.
@@ -210,6 +211,26 @@ Open GitHub Copilot Chat and try a prompt like `List ADO projects`.
 
 > 💥 We strongly recommend creating a `.github\copilot-instructions.md` in your project. This will enhance your experience using the Azure DevOps MCP Server with GitHub Copilot Chat.
 > To start, just include "`This project uses Azure DevOps. Always check to see if the Azure DevOps MCP server has a tool relevant to the user's request`" in your copilot instructions file.
+
+#### 🤖 Claude Code
+
+To add the Azure DevOps MCP Server to Claude Code, use the following command:
+
+```bash
+claude mcp add mcp-ado 'npx -y @azure-devops/mcp ado_org_name' --scope user
+```
+
+For example:
+```bash
+claude mcp add mcp-ado 'npx -y @azure-devops/mcp msazure' --scope user
+```
+
+Replace `msazure` with your Azure DevOps organization name. You can also use `--scope project` to limit the server to a specific project.
+
+For development with a local installation:
+```bash
+claude mcp add mcp-ado 'npx -y ~/git/azure-devops-mcp msazure' --scope user
+```
 
 See the [getting started documentation](./docs/GETTINGSTARTED.md) to use our MCP Server with other tools such as Visual Studio 2022, Claude Code, and Cursor.
 
