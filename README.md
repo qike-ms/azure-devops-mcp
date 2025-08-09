@@ -221,6 +221,7 @@ claude mcp add mcp-ado 'npx -y @azure-devops/mcp ado_org_name' --scope user
 ```
 
 For example:
+
 ```bash
 claude mcp add mcp-ado 'npx -y @azure-devops/mcp msazure' --scope user
 ```
@@ -228,6 +229,7 @@ claude mcp add mcp-ado 'npx -y @azure-devops/mcp msazure' --scope user
 Replace `msazure` with your Azure DevOps organization name. You can also use `--scope project` to limit the server to a specific project.
 
 For development with a local installation:
+
 ```bash
 claude mcp add mcp-ado 'npx -y ~/git/azure-devops-mcp msazure' --scope user
 ```

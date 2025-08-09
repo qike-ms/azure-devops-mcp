@@ -644,7 +644,7 @@ function configureWorkItemTools(server: McpServer, tokenProvider: () => Promise<
     async ({ wiql, top }) => {
       const connection = await connectionProvider();
       const workItemApi = await connection.getWorkItemTrackingApi();
-      
+
       const wiqlObject: Wiql = { query: wiql };
       const queryResult = await workItemApi.queryByWiql(wiqlObject, undefined, undefined, top);
 
